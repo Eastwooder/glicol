@@ -1,7 +1,7 @@
 [package]
 name = "glicol_synth"
 version = "0.12.8"
-edition = "2021"
+edition = "2018"
 keywords = [
 	"audio",
     "music",
@@ -28,18 +28,18 @@ node-sum = ["dasp_slice"]
 
 [dependencies]
 # glicol_macros = { path = "../macros"}
-petgraph = { version = "0.6",  features = ["stable_graph"] }
-dasp_slice = { version = "0.11.0", default-features = false, features = ["std"], optional = true }
-dasp_ring_buffer = "0.11.0"
-dasp_signal = "0.11.0"
+petgraph = { git = "https://github.com/zendurix/petgraph.git", branch = "better_no_std",  features = ["stable_graph"] }
+dasp_slice = { version = "0.11.0", default-features = false, optional = true }
+dasp_ring_buffer = { version = "0.11.0", default-features = false }
+dasp_signal = { version = "0.11.0", default-features = false }
 dasp_interpolate = { version = "0.11.0", features = ["linear", "sinc"] }
 hashbrown = "0.12"
 arrayvec = "0.7.2"
 rhai = { version = "1.6.0", features = ["sync", "f32_float", "only_i32"], optional = true  }
-freeverb = { git = "https://github.com/irh/freeverb-rs"}
+# freeverb = { git = "https://github.com/irh/freeverb-rs"}
 
 [dev-dependencies]
 gnuplot = "0.0.37"
-petgraph = { version = "0.6",  features = ["stable_graph"] }
+# petgraph = { git = "https://github.com/zendurix/petgraph.git", branch = "better_no_std",  features = ["stable_graph"] }
 cpal = "0.14.0"
 anyhow = "1.0.63"

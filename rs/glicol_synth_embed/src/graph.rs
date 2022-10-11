@@ -6,6 +6,11 @@ use crate::{
 };
 
 use hashbrown::HashMap;
+use arrayvec::ArrayVec;
+
+extern crate alloc;
+use alloc::boxed::Box;
+
 use petgraph::data::{DataMap, DataMapMut};
 use petgraph::visit::{
     Data, DfsPostOrder, GraphBase, IntoNeighborsDirected, Reversed, //NodeCount, NodeIndexable, 
@@ -30,7 +35,7 @@ where
 /// For a graph to be compatible with a graph **Processor**, its node weights must be of type
 /// `NodeData<T>`, where `T` is some type that implements the `Node` trait.
 pub struct NodeData<T: ?Sized, const N: usize> {
-    pub buffers: Vec<Buffer<N>>,
+    pub buffers: ArrayVec<Buffer<N>, 8>,
     pub node: T,
 }
 
@@ -38,12 +43,13 @@ impl<G, const N: usize> Processor<G, N>
 where
     G: Visitable + petgraph::visit::NodeIndexable,
 {
-    pub fn with_capacity(max_nodes: usize) -> Self
+    // TODO: remove this with_capacity; max_nodes: usize
+    pub fn new() -> Self
     where
         G::Map: Default,
     {
         let mut dfs_post_order = DfsPostOrder::default();
-        dfs_post_order.stack = Vec::with_capacity(max_nodes);
+        dfs_post_order.stack = ArrayVec::<_, 1024>::new().to_vec();
         let inputs = HashMap::new(); //Vec::with_capacity(max_nodes);
         Self {
             dfs_post_order,
@@ -62,30 +68,38 @@ where
 
 impl<T, const N: usize> NodeData<T, N> {
     /// Construct a new **NodeData** from an instance of its node type and buffers.
-    pub fn new(node: T, buffers: Vec<Buffer<N>>) -> Self {
+    pub fn new(node: T, buffers: ArrayVec<Buffer<N>, 8>) -> Self {
         NodeData { node, buffers }
     }
 
     /// Creates a new **NodeData** with a single buffer.
     pub fn new1(node: T) -> Self {
-        Self::new(node, vec![Buffer::SILENT])
+        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+        vec.push(Buffer::SILENT);
+        Self::new(node, vec)
     }
 
     /// Creates a new **NodeData** with two buffers.
     pub fn new2(node: T) -> Self {
-        Self::new(node, vec![Buffer::SILENT; 2])
+        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+        vec.push(Buffer::SILENT);
+        Self::new(node, vec)
     }
 
     /// Creates a new **NodeData** with 8 buffers.
     pub fn multi_chan_node(chan: usize, node: T) -> Self {
-        Self::new(node, vec![Buffer::SILENT; chan])
+        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+        for _ in 0..chan {
+            vec.push(Buffer::SILENT);
+        };
+        Self::new(node, vec)
     }
 }
 
 #[cfg(feature = "node-boxed")]
 impl<const N: usize> NodeData<BoxedNode<N>, N> {
     /// The same as **new**, but boxes the given node data before storing it.
-    pub fn boxed<T>(node: T, buffers: Vec<Buffer<N>>) -> Self
+    pub fn boxed<T>(node: T, buffers: ArrayVec<Buffer<N>, 8>) -> Self
     where
         T: 'static + Node<N>,
     {
@@ -97,7 +111,9 @@ impl<const N: usize> NodeData<BoxedNode<N>, N> {
     where
         T: 'static + Node<N>,
     {
-        Self::boxed(node, vec![Buffer::SILENT])
+        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+        vec.push(Buffer::SILENT);
+        Self::boxed(node, vec)
     }
 
     /// The same as **new2**, but boxes the given node data before storing it.
@@ -105,7 +121,10 @@ impl<const N: usize> NodeData<BoxedNode<N>, N> {
     where
         T: 'static + Node<N>,
     {
-        Self::boxed(node, vec![Buffer::SILENT, Buffer::SILENT])
+        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+        vec.push(Buffer::SILENT);
+        vec.push(Buffer::SILENT);
+        Self::boxed(node, vec)
     }
 }
 

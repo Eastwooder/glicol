@@ -6,11 +6,13 @@ pub use crate::{
     BoxedNodeSend,
     Processor,
     Message,
-    Sum2,
+    Destination,
     Pass
 };
 
 use hashbrown::HashMap;
+// use arrayvec::ArrayVec;
+
 use petgraph::{
     graph::NodeIndex,
     prelude::EdgeIndex
@@ -81,25 +83,25 @@ pub struct AudioContextConfig {
     pub max_edges: usize,
 }
 
-impl std::default::Default for AudioContextConfig {
-    fn default() -> Self {
-        Self {
-            sr: 44100,
-            channels: 2,
-            max_nodes: 1024,
-            max_edges: 1024
-        }
-    }
-}
+// impl std::default::Default for AudioContextConfig {
+//     fn default() -> Self {
+//         Self {
+//             sr: 44100,
+//             channels: 2,
+//             max_nodes: 1024,
+//             max_edges: 1024
+//         }
+//     }
+// }
 
-#[macro_export]
-macro_rules! audiocontext {
-    ($size:expr, {$($para: ident: $data:expr),*}) => {
-        (
-            AudioContextBuilder::<$size>::new()$(.$para($data))*.build()
-        )
-    }
-}
+// #[macro_export]
+// macro_rules! audiocontext {
+//     ($size:expr, {$($para: ident: $data:expr),*}) => {
+//         (
+//             AudioContextBuilder::<$size>::new()$(.$para($data))*.build()
+//         )
+//     }
+// }
 
 pub type GlicolNodeData<const N: usize> = NodeData<BoxedNodeSend<N>, N>;
 pub type GlicolGraph<const N: usize> = petgraph::stable_graph::StableGraph<GlicolNodeData<N>, ()>;
@@ -118,14 +120,15 @@ pub struct AudioContext<const N: usize> {
 impl<const N: usize> AudioContext<N> {
     pub fn new(config: AudioContextConfig) -> Self {
         let mut graph = GlicolGraph::<N>::with_capacity(config.max_nodes, config.max_edges);
-        let destination = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Sum2) ) );
+        let destination = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Destination) ) );
         let input = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Pass) ) );
         Self {
             graph,
             destination,
             input,
             tags: HashMap::new(),
-            processor: GlicolProcessor::<N>::with_capacity(config.max_nodes),
+            processor: GlicolProcessor::<N>::new(),
+            // processor: GlicolProcessor::<N>::with_capacity(config.max_nodes),
             config,
         }
     }
@@ -133,8 +136,8 @@ impl<const N: usize> AudioContext<N> {
     pub fn reset(&mut self) {
         // self.graph.clear_edges();
         self.graph.clear();
-        self.destination = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Sum2) ) );
-        self.input =  self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Pass) ) );
+        self.destination = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Destination) ) );
+        self.input = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Pass) ) );
     }
 
     /// an alternative to new() specify the estimated max node and edge numbers
@@ -202,43 +205,43 @@ impl<const N: usize> AudioContext<N> {
         return edge_index
     }
 
-    pub fn chain(&mut self, chain: Vec<NodeIndex>) -> Vec<EdgeIndex> {
-        let mut v = vec![];
-        for pair in chain.windows(2) {
-            v.push(self.graph.add_edge(pair[0], pair[1], ()));
-            self.graph[pair[1]].node.send_msg(Message::Index(pair[0].index()));
-        };
-        v
-    }
+    // pub fn chain(&mut self, chain: Vec<NodeIndex>) -> Vec<EdgeIndex> {
+    //     let mut v = vec![];
+    //     for pair in chain.windows(2) {
+    //         v.push(self.graph.add_edge(pair[0], pair[1], ()));
+    //         self.graph[pair[1]].node.send_msg(Message::Index(pair[0].index()));
+    //     };
+    //     v
+    // }
 
-    pub fn chain_boxed(&mut self, chain: Vec<GlicolNodeData<N>>) 
-    -> (Vec<NodeIndex>, Vec<EdgeIndex>) {
-        let mut indexes = vec![];
-        let mut v = vec![];
-        for node in chain {
-            let id = self.graph.add_node(node);
-            indexes.push(id);
-        }
-        for pair in indexes.windows(2) {
-            v.push(self.graph.add_edge(pair[0], pair[1], ()));
-            self.graph[pair[1]].node.send_msg(Message::Index(pair[0].index()));
-        };
-        (indexes, v)
-    }
+    // pub fn chain_boxed(&mut self, chain: Vec<GlicolNodeData<N>>) 
+    // -> (Vec<NodeIndex>, Vec<EdgeIndex>) {
+    //     let mut indexes = vec![];
+    //     let mut v = vec![];
+    //     for node in chain {
+    //         let id = self.graph.add_node(node);
+    //         indexes.push(id);
+    //     }
+    //     for pair in indexes.windows(2) {
+    //         v.push(self.graph.add_edge(pair[0], pair[1], ()));
+    //         self.graph[pair[1]].node.send_msg(Message::Index(pair[0].index()));
+    //     };
+    //     (indexes, v)
+    // }
 
-    pub fn add_node_chain(&mut self, chain: Vec<NodeData<BoxedNodeSend<N>, N>>) -> (Vec<NodeIndex>, Vec<EdgeIndex>)
-    {
-        let mut v = vec![];
-        let mut j = vec![];
-        for node in chain {
-            let id = self.graph.add_node(node);
-            v.push(id);
-        };
-        for pair in v.windows(2) {
-            j.push(self.graph.add_edge(pair[0], pair[1], ()));
-        };
-        (v, j)
-    }
+    // pub fn add_node_chain(&mut self, chain: Vec<NodeData<BoxedNodeSend<N>, N>>) -> (Vec<NodeIndex>, Vec<EdgeIndex>)
+    // {
+    //     let mut v = vec![];
+    //     let mut j = vec![];
+    //     for node in chain {
+    //         let id = self.graph.add_node(node);
+    //         v.push(id);
+    //     };
+    //     for pair in v.windows(2) {
+    //         j.push(self.graph.add_edge(pair[0], pair[1], ()));
+    //     };
+    //     (v, j)
+    // }
 
     pub fn next_block(&mut self) -> &[Buffer<N>] {
         self.processor.process(&mut self.graph, self.destination);

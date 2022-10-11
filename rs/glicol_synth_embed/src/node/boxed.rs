@@ -3,6 +3,9 @@ use core::fmt;
 use core::ops::{Deref, DerefMut};
 use hashbrown::HashMap;
 
+extern crate alloc;
+use alloc::boxed::Box;
+
 /// A wrapper around a `Box<dyn Node>`.
 ///
 /// Provides the necessary `Sized` implementation to allow for compatibility with the graph process

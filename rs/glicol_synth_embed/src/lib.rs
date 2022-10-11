@@ -4,11 +4,11 @@
 
 // use alloc::ArrayVec;
 
-// mod context;
-// pub use context::*;
+mod context;
+pub use context::*;
 
-// mod graph;
-// pub use graph::*;
+mod graph;
+pub use graph::*;
 
 mod node;
 pub use node::{Input, Node};
@@ -40,24 +40,28 @@ pub use buffer::Buffer;
 #[cfg(feature = "node-boxed")]
 pub use node::{BoxedNode, BoxedNodeSend};
 
+#[cfg(feature = "node-pass")]
+pub use node::{Pass};
+
 // #[cfg(feature = "node-sum")]
 // pub use node::{Sum, Sum2};
 
-#[cfg(feature = "node-pass")]
-pub use node::{Pass};
+pub use node::Destination;
+
+pub use node::ConstSig;
 
 use hashbrown::HashMap;
 // pub use hashbrown::HashMap;
 pub use arrayvec::{ArrayVec, ArrayString};
 
-// #[macro_export]
-// macro_rules! impl_to_boxed_nodedata {
-//     () => {
-//         pub fn to_boxed_nodedata<const N: usize>(self, channels: usize) -> NodeData<BoxedNodeSend<N>, N> {
-//             NodeData::multi_chan_node(channels, BoxedNodeSend::<N>::new( self ) )
-//         }
-//     };
-// }
+#[macro_export]
+macro_rules! impl_to_boxed_nodedata {
+    () => {
+        pub fn to_boxed_nodedata<const N: usize>(self, channels: usize) -> NodeData<BoxedNodeSend<N>, N> {
+            NodeData::multi_chan_node(channels, BoxedNodeSend::<N>::new( self ) )
+        }
+    };
+}
 
 #[derive(Debug, Clone)]
 pub enum Message {
@@ -66,7 +70,7 @@ pub enum Message {
     SetToSymbol(u8, ArrayString<32>),
     // SetToSamples(u8, (&'static [f32], usize, usize)),
     SetSamplePattern(ArrayVec<(ArrayString<32>, f32), 32>, f32, HashMap<ArrayString<32>, (&'static [f32], usize, usize)>),
-    // SetPattern(ArrayVec<(f32, f32)>, f32),
+    SetPattern(ArrayVec<(f32, f32), 128>, f32),
     // SetToSeq(u8, ArrayVec::<(f32, GlicolPara)>),
     // SetRefOrder(HashMap<ArrayString, usize>),
     // SetBPM(f32),

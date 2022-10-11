@@ -14,6 +14,9 @@ pest_derive = "2.4.0"
 # dasp_slice = { version ="0.11.0", default-features = false, features=["all-no-std"], optional = true }
 # dasp_sample = { version ="0.11.0", default-features = false }
 
+[dev-dependencies]
+libc-print = "0.1.20"
+
 [features]
 default = ["node-boxed", "node-pass", "node-sum"]
 # std = []
@@ -26,3 +29,9 @@ node-pass = []
 # node-dynamic = ["rhai"]
 # node-sum = ["dasp_slice"]
 node-sum = []
+
+
+[profile.release]
+# debug = true
+# lto = true
+# opt-level = "s"

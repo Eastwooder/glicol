@@ -1,12 +1,19 @@
 use crate::buffer::Buffer;
 use hashbrown::HashMap;
 
+extern crate alloc;
+use alloc::boxed::Box;
+
 #[cfg(feature = "node-boxed")]
 mod boxed; pub use boxed::*;
 #[cfg(feature = "node-pass")]
 mod pass; pub use pass::*;
+
 // #[cfg(feature = "node-sum")]
 // mod sum; pub use sum::*;
+
+mod destination; pub use destination::*;
+mod constsig; pub use constsig::*;
 
 // pub mod oscillator; pub use oscillator::*;
 // pub mod operator; pub use operator::*;
