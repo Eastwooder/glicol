@@ -10,8 +10,9 @@
 // mod graph;
 // pub use graph::*;
 
-// mod node;
-// pub use node::{Input, Node};
+mod node;
+pub use node::{Input, Node};
+
 // pub use node::{
 //     oscillator, 
 //     filter, 
@@ -24,10 +25,11 @@
 //     compound,
 //     synth
 // };
+
 // pub use node::*; // TODO: Do not expose every struct here
 
-// mod buffer;
-// pub use buffer::Buffer;
+mod buffer;
+pub use buffer::Buffer;
 
 // #[cfg(feature = "node-sampling")]
 // pub use node::{sampling};
@@ -35,17 +37,14 @@
 // #[cfg(feature = "node-dynamic")]
 // pub use node::{dynamic};
 
-// #[cfg(feature = "node-boxed")]
-// pub use node::{BoxedNode, BoxedNodeSend};
+#[cfg(feature = "node-boxed")]
+pub use node::{BoxedNode, BoxedNodeSend};
 
 // #[cfg(feature = "node-sum")]
 // pub use node::{Sum, Sum2};
 
-// #[cfg(feature = "node-pass")]
-// pub use node::{Pass};
-
-// #[cfg(feature = "node-pass")]
-// pub use node::{Pass};
+#[cfg(feature = "node-pass")]
+pub use node::{Pass};
 
 use hashbrown::HashMap;
 // pub use hashbrown::HashMap;

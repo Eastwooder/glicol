@@ -7,11 +7,22 @@ edition = "2021"
 
 [dependencies]
 petgraph = { version = "0.5.1", git = "https://github.com/chaosprint/petgraph.git", branch = "better_no_std",  features = ["stable_graph"], default-features = false }
-hashbrown = { version = "0.12", features = [] }
+hashbrown = { version = "0.12" }
 arrayvec = { version = "0.7.2", default-features = false }
 pest = { version = "2.4.0", default-features = false }
 pest_derive = "2.4.0"
+# dasp_slice = { version ="0.11.0", default-features = false, features=["all-no-std"], optional = true }
+# dasp_sample = { version ="0.11.0", default-features = false }
 
 [features]
-default = ["std"]
-std = []
+default = ["node-boxed", "node-pass", "node-sum"]
+# std = []
+
+# use-samples = ["node-sampling"]
+# use-meta = ["node-dynamic"]
+node-boxed = []
+node-pass = []
+# node-sampling = []
+# node-dynamic = ["rhai"]
+# node-sum = ["dasp_slice"]
+node-sum = []
