@@ -1,0 +1,17 @@
+[package]
+name = "glicol_synth_embed"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+petgraph = { version = "0.5.1", git = "https://github.com/chaosprint/petgraph.git", branch = "better_no_std",  features = ["stable_graph"], default-features = false }
+hashbrown = { version = "0.12", features = [] }
+arrayvec = { version = "0.7.2", default-features = false }
+pest = { version = "2.4.0", default-features = false }
+pest_derive = "2.4.0"
+
+[features]
+default = ["std"]
+std = []
