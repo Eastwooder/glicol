@@ -52,7 +52,7 @@ impl ConstSig {
 }
 
 impl<const N:usize> Node<N> for ConstSig {
-    fn process(&mut self, _inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, _inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         
         let cycle_dur = 60. / self.bpm * 4.;
         let bar_dur = cycle_dur * self.span * self.sr as f32;

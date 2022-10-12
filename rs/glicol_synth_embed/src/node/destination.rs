@@ -5,7 +5,7 @@ use hashbrown::HashMap;
 pub struct Destination;
 
 impl<const N: usize> Node<N> for Destination {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
 
         for i in 0..N {
             for j in 0..output.len() {

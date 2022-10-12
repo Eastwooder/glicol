@@ -41,20 +41,20 @@ mod constsig; pub use constsig::*;
 // pub use dynamic::*;
 
 pub trait Node<const N: usize> {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]);
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]);
     fn send_msg(&mut self, info: crate::Message);
 }
 
 /// An important part of the `Node` trait; each `Input` contains the relevant node id as `usize`
 pub struct Input<const N: usize> {
-    buffers_ptr: *const Buffer<N>,
+    buffers_ptr: *const [f32; N],
     buffers_len: usize,
     pub node_id: usize
 }
 
 impl<const N: usize> Input<N> {
     // Constructor solely for use within the graph `process` function.
-    pub(crate) fn new(slice: &[Buffer<N>], node_id: usize) -> Self {
+    pub(crate) fn new(slice: &[[f32; N]], node_id: usize) -> Self {
         let buffers_ptr = slice.as_ptr();
         let buffers_len = slice.len();
         Input {
@@ -65,7 +65,7 @@ impl<const N: usize> Input<N> {
     }
 
     /// A reference to the buffers of the input node.
-    pub fn buffers(&self) -> &[Buffer<N>] {
+    pub fn buffers(&self) -> &[[f32; N]] {
         // As we know that an `Input` can only be constructed during a call to the graph `process`
         // function, we can be sure that our slice is still valid as long as the input itself is
         // alive.
@@ -88,7 +88,7 @@ impl<'a, T, const N: usize> Node<N> for &'a mut T
 where
     T: Node<N>,
 {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         (**self).process(inputs, output)
     }
     fn send_msg(&mut self, info: crate::Message) {
@@ -100,23 +100,23 @@ impl<T, const N: usize> Node<N> for Box<T>
 where
     T: Node<N>,
 {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         (**self).process(inputs, output)
     }
     fn send_msg(&mut self, _info: crate::Message) {
     }
 }
 
-impl<const N: usize> Node<N> for dyn Fn(&HashMap<usize, Input<N>>, &mut [Buffer<N>]) {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+impl<const N: usize> Node<N> for dyn Fn(&HashMap<usize, Input<N>>, &mut [[f32; N]]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         (*self)(inputs, output)
     }
     fn send_msg(&mut self, _info: crate::Message) {
     }
 }
 
-impl<const N: usize> Node<N> for dyn FnMut(&HashMap<usize, Input<N>>, &mut [Buffer<N>]) {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+impl<const N: usize> Node<N> for dyn FnMut(&HashMap<usize, Input<N>>, &mut [[f32; N]]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         (*self)(inputs, output)
     }
     
@@ -124,8 +124,8 @@ impl<const N: usize> Node<N> for dyn FnMut(&HashMap<usize, Input<N>>, &mut [Buff
     }
 }
 
-impl<const N: usize> Node<N> for fn(&HashMap<usize, Input<N>>, &mut [Buffer<N>]) {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+impl<const N: usize> Node<N> for fn(&HashMap<usize, Input<N>>, &mut [[f32; N]]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         (*self)(inputs, output)
     }
     fn send_msg(&mut self, _info: crate::Message) {

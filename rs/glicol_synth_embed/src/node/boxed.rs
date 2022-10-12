@@ -47,7 +47,7 @@ impl<const N: usize> BoxedNodeSend<N> {
 }
 
 impl<const N: usize> Node<N> for BoxedNode<N> {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         self.0.process(inputs, output)
     }
     fn send_msg(&mut self, info: Message) {
@@ -56,7 +56,7 @@ impl<const N: usize> Node<N> for BoxedNode<N> {
 }
 
 impl<const N: usize> Node<N> for BoxedNodeSend<N> {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         self.0.process(inputs, output)
     }
     fn send_msg(&mut self, info: Message) {

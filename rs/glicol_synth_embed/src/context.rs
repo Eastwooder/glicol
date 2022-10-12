@@ -18,6 +18,8 @@ use petgraph::{
     prelude::EdgeIndex
 };
 
+extern crate alloc;
+
 /// The builder to build `AudioContext`
 pub struct AudioContextBuilder<const N: usize> {
     sr: usize,
@@ -33,8 +35,8 @@ impl<const N: usize> AudioContextBuilder<N> {
             sr: 44100,
             channels: 2,
             // stablegraph: false,
-            max_nodes: 1024,
-            max_edges: 1024
+            max_nodes: 8,
+            max_edges: 8
         }
     }
 
@@ -109,39 +111,38 @@ pub type GlicolProcessor<const N: usize> = Processor<GlicolGraph<N>, N>;
 
 /// The audio context that holds a destination and the graph connection
 pub struct AudioContext<const N: usize> {
-    pub input: NodeIndex,
-    pub destination: NodeIndex,
-    pub tags: HashMap<&'static str, NodeIndex>,
-    pub graph: GlicolGraph<N>,
-    pub processor: GlicolProcessor<N>,
+    // pub input: NodeIndex,
+    // pub destination: NodeIndex,
+    // pub tags: HashMap<&'static str, NodeIndex>,
+    // pub graph: GlicolGraph<N>,
+    // pub processor: GlicolProcessor<N>,
     config: AudioContextConfig
 }
 
 impl<const N: usize> AudioContext<N> {
     pub fn new(config: AudioContextConfig) -> Self {
-        let mut graph = GlicolGraph::<N>::with_capacity(config.max_nodes, config.max_edges);
-        let destination = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Destination) ) );
-        let input = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Pass) ) );
+        let gtestf32 = petgraph::stable_graph::StableGraph::<NodeData<(), N>, ()>::with_capacity(config.max_nodes, config.max_edges);
+        // let mut graph = GlicolGraph::<N>::with_capacity(config.max_nodes, config.max_edges);
+        // let destination = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Destination) ) );
+        // let input = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Pass) ) );
         Self {
-            graph,
-            destination,
-            input,
-            tags: HashMap::new(),
-            processor: GlicolProcessor::<N>::new(),
+            // graph,
+            // destination,
+            // input,
+            // tags: HashMap::new(),
+            // processor: GlicolProcessor::<N>::new(),
             // processor: GlicolProcessor::<N>::with_capacity(config.max_nodes),
             config,
         }
     }
 
-    pub fn reset(&mut self) {
-        // self.graph.clear_edges();
-        self.graph.clear();
-        self.destination = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Destination) ) );
-        self.input = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Pass) ) );
-    }
+    // pub fn reset(&mut self) {
+    //     // self.graph.clear_edges();
+    //     self.graph.clear();
+    //     self.destination = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Destination) ) );
+    //     self.input = self.graph.add_node( NodeData::multi_chan_node(self.config.channels, BoxedNodeSend::<N>::new(Pass) ) );
+    // }
 
-    /// an alternative to new() specify the estimated max node and edge numbers
-    /// to avoid dynamic allocation
     // pub fn with_capacity(nodes: usize, edges: usize) -> Self {
     //     let mut graph = GlicolGraph::<N>::with_capacity(nodes, edges);
     //     let destination = graph.add_node( NodeData::new2( BoxedNodeSend::<N>::new( Sum)  ) );
@@ -154,56 +155,56 @@ impl<const N: usize> AudioContext<N> {
     //     }
     // }
 
-    pub fn add_mono_node<T>(&mut self, node: T) -> NodeIndex
-    where T: Node<N> + Send + 'static,
-    {
-        let node_index = self.graph.add_node( // channel?
-            NodeData::new1(
-                BoxedNodeSend::<N>::new(
-                    node
-                )
-            )
-        );
-        return node_index
-    }
+    // pub fn add_mono_node<T>(&mut self, node: T) -> NodeIndex
+    // where T: Node<N> + Send + 'static,
+    // {
+    //     let node_index = self.graph.add_node( // channel?
+    //         NodeData::new1(
+    //             BoxedNodeSend::<N>::new(
+    //                 node
+    //             )
+    //         )
+    //     );
+    //     return node_index
+    // }
 
-    pub fn add_stereo_node<T>(&mut self, node: T) -> NodeIndex
-    where T: Node<N> + Send + 'static,
-    {
-        let node_index = self.graph.add_node( // channel?
-            NodeData::new2(
-                BoxedNodeSend::<N>::new(
-                    node
-                )
-            )
-        );
-        return node_index
-    }
+    // pub fn add_stereo_node<T>(&mut self, node: T) -> NodeIndex
+    // where T: Node<N> + Send + 'static,
+    // {
+    //     let node_index = self.graph.add_node( // channel?
+    //         NodeData::new2(
+    //             BoxedNodeSend::<N>::new(
+    //                 node
+    //             )
+    //         )
+    //     );
+    //     return node_index
+    // }
 
-    pub fn add_multi_chan_node<T>(&mut self, chan: usize, node: T) -> NodeIndex
-    where T: Node<N> + Send + 'static,
-    {
-        let node_index = self.graph.add_node( // channel?
-            NodeData::multi_chan_node (chan,
-                BoxedNodeSend::<N>::new(
-                    node
-                )
-            )
-        );
-        return node_index
-    }
+    // pub fn add_multi_chan_node<T>(&mut self, chan: usize, node: T) -> NodeIndex
+    // where T: Node<N> + Send + 'static,
+    // {
+    //     let node_index = self.graph.add_node( // channel?
+    //         NodeData::multi_chan_node (chan,
+    //             BoxedNodeSend::<N>::new(
+    //                 node
+    //             )
+    //         )
+    //     );
+    //     return node_index
+    // }
 
-    pub fn connect(&mut self, from: NodeIndex, to: NodeIndex) -> EdgeIndex {
-        let edge_index = self.graph.add_edge(from, to, ());
-        self.graph[to].node.send_msg(Message::Index(from.index()));
-        return edge_index
-    }
+    // pub fn connect(&mut self, from: NodeIndex, to: NodeIndex) -> EdgeIndex {
+    //     let edge_index = self.graph.add_edge(from, to, ());
+    //     self.graph[to].node.send_msg(Message::Index(from.index()));
+    //     return edge_index
+    // }
 
-    pub fn connect_with_order(&mut self, from: NodeIndex, to: NodeIndex, pos: usize) -> EdgeIndex {
-        let edge_index = self.graph.add_edge(from, to, ());
-        self.graph[to].node.send_msg(Message::IndexOrder(pos, from.index()));
-        return edge_index
-    }
+    // pub fn connect_with_order(&mut self, from: NodeIndex, to: NodeIndex, pos: usize) -> EdgeIndex {
+    //     let edge_index = self.graph.add_edge(from, to, ());
+    //     self.graph[to].node.send_msg(Message::IndexOrder(pos, from.index()));
+    //     return edge_index
+    // }
 
     // pub fn chain(&mut self, chain: Vec<NodeIndex>) -> Vec<EdgeIndex> {
     //     let mut v = vec![];
@@ -243,18 +244,18 @@ impl<const N: usize> AudioContext<N> {
     //     (v, j)
     // }
 
-    pub fn next_block(&mut self) -> &[Buffer<N>] {
-        self.processor.process(&mut self.graph, self.destination);
-        &self.graph[self.destination].buffers
-    }
+    // pub fn next_block(&mut self) -> &[Buffer<N>] {
+    //     self.processor.process(&mut self.graph, self.destination);
+    //     &self.graph[self.destination].buffers
+    // }
 
-    pub fn send_msg(&mut self, index: NodeIndex, msg: Message) {
-        self.graph[index].node.send_msg(msg);
-    }
+    // pub fn send_msg(&mut self, index: NodeIndex, msg: Message) {
+    //     self.graph[index].node.send_msg(msg);
+    // }
 
-    pub fn send_msg_to_all(&mut self, msg: Message) {
-        for nodedata in self.graph.node_weights_mut() {
-            nodedata.node.send_msg(msg.clone());
-        }
-    }
+    // pub fn send_msg_to_all(&mut self, msg: Message) {
+    //     for nodedata in self.graph.node_weights_mut() {
+    //         nodedata.node.send_msg(msg.clone());
+    //     }
+    // }
 }

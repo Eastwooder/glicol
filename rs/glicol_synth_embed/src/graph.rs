@@ -35,7 +35,7 @@ where
 /// For a graph to be compatible with a graph **Processor**, its node weights must be of type
 /// `NodeData<T>`, where `T` is some type that implements the `Node` trait.
 pub struct NodeData<T: ?Sized, const N: usize> {
-    pub buffers: ArrayVec<Buffer<N>, 8>,
+    pub buffers: [[f32; N]; 2],
     pub node: T,
 }
 
@@ -68,64 +68,67 @@ where
 
 impl<T, const N: usize> NodeData<T, N> {
     /// Construct a new **NodeData** from an instance of its node type and buffers.
-    pub fn new(node: T, buffers: ArrayVec<Buffer<N>, 8>) -> Self {
+    pub fn new(
+        node: T, 
+        buffers: [[f32; N]; 2]
+    ) -> Self {
         NodeData { node, buffers }
     }
 
-    /// Creates a new **NodeData** with a single buffer.
-    pub fn new1(node: T) -> Self {
-        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
-        vec.push(Buffer::SILENT);
-        Self::new(node, vec)
-    }
+    // /// Creates a new **NodeData** with a single buffer.
+    // pub fn new1(node: T) -> Self {
+    //     // let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+    //     // vec.push(Buffer::SILENT);
+    //     Self::new(node, [Buffer::SILENT; 1])
+    // }
 
-    /// Creates a new **NodeData** with two buffers.
-    pub fn new2(node: T) -> Self {
-        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
-        vec.push(Buffer::SILENT);
-        Self::new(node, vec)
-    }
+    // /// Creates a new **NodeData** with two buffers.
+    // pub fn new2(node: T) -> Self {
+    //     // let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+    //     // vec.push(Buffer::SILENT);
+    //     Self::new(node, [Buffer::SILENT; 2])
+    // }
 
     /// Creates a new **NodeData** with 8 buffers.
     pub fn multi_chan_node(chan: usize, node: T) -> Self {
-        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
-        for _ in 0..chan {
-            vec.push(Buffer::SILENT);
-        };
-        Self::new(node, vec)
+        // let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+        // for _ in 0..chan {
+        //     vec.push(Buffer::SILENT);
+        // };
+        Self::new(node, [[0.0;N]; 2])
     }
 }
 
 #[cfg(feature = "node-boxed")]
 impl<const N: usize> NodeData<BoxedNode<N>, N> {
     /// The same as **new**, but boxes the given node data before storing it.
-    pub fn boxed<T>(node: T, buffers: ArrayVec<Buffer<N>, 8>) -> Self
+    pub fn boxed<T>(node: T, buffers: [[f32; N]; 2]) -> Self
     where
         T: 'static + Node<N>,
     {
         NodeData::new(BoxedNode(Box::new(node)), buffers)
     }
 
-    /// The same as **new1**, but boxes the given node data before storing it.
-    pub fn boxed1<T>(node: T) -> Self
-    where
-        T: 'static + Node<N>,
-    {
-        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
-        vec.push(Buffer::SILENT);
-        Self::boxed(node, vec)
-    }
+    // /// The same as **new1**, but boxes the given node data before storing it.
+    // pub fn boxed1<T>(node: T) -> Self
+    // where
+    //     T: 'static + Node<N>,
+    // {
+    //     let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+    //     vec.push(Buffer::SILENT);
+    //     Self::boxed(node, vec)
+    // }
 
-    /// The same as **new2**, but boxes the given node data before storing it.
-    pub fn boxed2<T>(node: T) -> Self
-    where
-        T: 'static + Node<N>,
-    {
-        let mut vec = ArrayVec::<Buffer<N>, 8>::new();
-        vec.push(Buffer::SILENT);
-        vec.push(Buffer::SILENT);
-        Self::boxed(node, vec)
-    }
+    // /// The same as **new2**, but boxes the given node data before storing it.
+    // pub fn boxed2<T>(node: T) -> Self
+    // where
+    //     T: 'static + Node<N>,
+    // {
+    //     let mut vec = ArrayVec::<Buffer<N>, 8>::new();
+    //     vec.push(Buffer::SILENT);
+    //     vec.push(Buffer::SILENT);
+    //     Self::boxed(node, vec)
+    // }
 }
 
 pub fn process<G, T, const N: usize>(

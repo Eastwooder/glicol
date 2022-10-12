@@ -12,7 +12,7 @@ use hashbrown::HashMap;
 pub struct Pass;
 
 impl<const N: usize> Node<N> for Pass {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
         let input = match inputs.values().next() {
             None => return,
             Some(input) => input,
