@@ -12,19 +12,19 @@ use hashbrown::HashMap;
 pub struct Pass;
 
 impl<const N: usize> Node<N> for Pass {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
-        let input = match inputs.values().next() {
-            None => return,
-            Some(input) => input,
-        };
-        if input.buffers().len() == 1 && output.len() == 2 {
-            output[0].copy_from_slice(&input.buffers()[0]);
-            output[1].copy_from_slice(&input.buffers()[0]);
-        } else {
-            for (out_buf, in_buf) in output.iter_mut().zip(input.buffers()) {
-                out_buf.copy_from_slice(in_buf);
-            }
-        }
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [f32]) {
+        // let input = match inputs.values().next() {
+        //     None => return,
+        //     Some(input) => input,
+        // };
+        // if input.buffers().len() == 1 && output.len() == 2 {
+        //     output[0].copy_from_slice(&input.buffers()[0]);
+        //     output[1].copy_from_slice(&input.buffers()[0]);
+        // } else {
+        //     for (out_buf, in_buf) in output.iter_mut().zip(input.buffers()) {
+        //         out_buf.copy_from_slice(in_buf);
+        //     }
+        // }
     }
     fn send_msg(&mut self, _info: Message) {
         

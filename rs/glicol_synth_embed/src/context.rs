@@ -121,7 +121,8 @@ pub struct AudioContext<const N: usize> {
 
 impl<const N: usize> AudioContext<N> {
     pub fn new(config: AudioContextConfig) -> Self {
-        let gtestf32 = petgraph::stable_graph::StableGraph::<NodeData<(), N>, ()>::with_capacity(config.max_nodes, config.max_edges);
+        // let gtestf32 = petgraph::stable_graph::StableGraph::<f32, ()>::with_capacity(config.max_nodes, config.max_edges);
+        let gtestf32 = petgraph::stable_graph::StableGraph::<NodeData<f32, N>, ()>::with_capacity(config.max_nodes, config.max_edges);
         // let mut graph = GlicolGraph::<N>::with_capacity(config.max_nodes, config.max_edges);
         // let destination = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Destination) ) );
         // let input = graph.add_node( NodeData::multi_chan_node(config.channels, BoxedNodeSend::<N>::new(Pass) ) );

@@ -35,7 +35,7 @@ where
 /// For a graph to be compatible with a graph **Processor**, its node weights must be of type
 /// `NodeData<T>`, where `T` is some type that implements the `Node` trait.
 pub struct NodeData<T: ?Sized, const N: usize> {
-    pub buffers: [[f32; N]; 2],
+    pub buffers: [f32; 2],
     pub node: T,
 }
 
@@ -70,7 +70,7 @@ impl<T, const N: usize> NodeData<T, N> {
     /// Construct a new **NodeData** from an instance of its node type and buffers.
     pub fn new(
         node: T, 
-        buffers: [[f32; N]; 2]
+        buffers: [f32; 2]
     ) -> Self {
         NodeData { node, buffers }
     }
@@ -95,14 +95,14 @@ impl<T, const N: usize> NodeData<T, N> {
         // for _ in 0..chan {
         //     vec.push(Buffer::SILENT);
         // };
-        Self::new(node, [[0.0;N]; 2])
+        Self::new(node, [0.0; 2])
     }
 }
 
 #[cfg(feature = "node-boxed")]
 impl<const N: usize> NodeData<BoxedNode<N>, N> {
     /// The same as **new**, but boxes the given node data before storing it.
-    pub fn boxed<T>(node: T, buffers: [[f32; N]; 2]) -> Self
+    pub fn boxed<T>(node: T, buffers: [f32; 2]) -> Self
     where
         T: 'static + Node<N>,
     {

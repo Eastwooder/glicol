@@ -5,29 +5,29 @@ use hashbrown::HashMap;
 pub struct Destination;
 
 impl<const N: usize> Node<N> for Destination {
-    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
+    fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [f32]) {
 
-        for i in 0..N {
-            for j in 0..output.len() {
-                output[j][i] = 0.0;
-            }
-        };
+        // for i in 0..N {
+        //     for j in 0..output.len() {
+        //         output[j][i] = 0.0;
+        //     }
+        // };
 
         // let in_num = inputs.len();
 
-        for i in 0..N {
-            // for j in 0..in_num {
-            for (_key, value) in inputs.iter() {
-                output[0][i] += value.buffers()[0][i];
-                if value.buffers().len() >= 2 {
-                    output[1][i] += value.buffers()[1][i];
-                } else {
-                    if output.len() >= 2 {
-                        output[1][i] += value.buffers()[0][i];
-                    }
-                }
-            }
-        }
+        // for i in 0..N {
+        //     // for j in 0..in_num {
+        //     for (_key, value) in inputs.iter() {
+        //         output[0][i] += value.buffers()[0][i];
+        //         if value.buffers().len() >= 2 {
+        //             output[1][i] += value.buffers()[1][i];
+        //         } else {
+        //             if output.len() >= 2 {
+        //                 output[1][i] += value.buffers()[0][i];
+        //             }
+        //         }
+        //     }
+        // }
     }
     fn send_msg(&mut self, _info: Message) {
         

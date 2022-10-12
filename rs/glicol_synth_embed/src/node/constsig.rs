@@ -52,27 +52,27 @@ impl ConstSig {
 }
 
 impl<const N:usize> Node<N> for ConstSig {
-    fn process(&mut self, _inputs: &mut HashMap<usize, Input<N>>, output: &mut [[f32; N]]) {
+    fn process(&mut self, _inputs: &mut HashMap<usize, Input<N>>, output: &mut [f32]) {
         
-        let cycle_dur = 60. / self.bpm * 4.;
-        let bar_dur = cycle_dur * self.span * self.sr as f32;
+        // let cycle_dur = 60. / self.bpm * 4.;
+        // let bar_dur = cycle_dur * self.span * self.sr as f32;
 
-        for i in 0..N {
+        // for i in 0..N {
 
-            for event in &self.events {
-                if (self.step % (bar_dur as usize)) == ((event.1 * cycle_dur * self.sr as f32) as usize) {
-                    self.val = event.0
-                }
-            }
+        //     for event in &self.events {
+        //         if (self.step % (bar_dur as usize)) == ((event.1 * cycle_dur * self.sr as f32) as usize) {
+        //             self.val = event.0
+        //         }
+        //     }
 
-            for event in &self.pattern {
-                if (self.step % (bar_dur as usize)) == ((event.1 * cycle_dur * self.sr as f32) as usize) {
-                    self.val = event.0
-                }
-            }
-            output[0][i] = self.val;
-            self.step += 1;
-        }
+        //     for event in &self.pattern {
+        //         if (self.step % (bar_dur as usize)) == ((event.1 * cycle_dur * self.sr as f32) as usize) {
+        //             self.val = event.0
+        //         }
+        //     }
+        //     output[0][i] = self.val;
+        //     self.step += 1;
+        // }
     }
     fn send_msg(&mut self, info: Message) {
 
