@@ -4,7 +4,7 @@ use gnuplot::*;
 
 fn main() {
     let mut engine = Engine::<128>::new();
-    engine.update_with_code(r#"o: [0.1=>100, 1/4=> 10.0, 1/3=>50]*(1/2).."#);
+    engine.update_with_code(r#"o: [0.1=>100, 1/4=> 10.0, 1/3=>50]"#);
     
     // plot part
     let mut x = Vec::<i32>::new();

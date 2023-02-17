@@ -1,4 +1,4 @@
-#![doc = include_str!("../README.md")]
+// #![doc = include_str!("../README.md")]
 mod context;
 pub use context::*;
 
@@ -7,22 +7,25 @@ pub use graph::*;
 
 mod node;
 pub use node::{Input, Node};
-pub use node::{
-    oscillator, 
-    filter, 
-    effect, 
-    envelope, 
-    operator, 
-    sequencer, 
-    signal,
-    delay,
-    compound,
-    synth
-};
-// pub use node::*; // TODO: Do not expose every struct here
+// pub use node::{
+//     oscillator, 
+//     filter, 
+//     effect, 
+//     envelope, 
+//     operator, 
+//     sequencer, 
+//     signal,
+//     delay,
+//     compound,
+//     synth
+// };
+pub use node::*; // TODO: Do not expose every struct here
 
 mod buffer;
 pub use buffer::Buffer;
+
+mod error;
+pub use error::*;
 
 // #[cfg(feature = "node-sampling")]
 // pub use node::{sampling};
@@ -30,13 +33,13 @@ pub use buffer::Buffer;
 // #[cfg(feature = "node-dynamic")]
 // pub use node::{dynamic};
 
-#[cfg(feature = "node-boxed")]
+// #[cfg(feature = "node-boxed")]
 pub use node::{BoxedNode, BoxedNodeSend};
 
-#[cfg(feature = "node-sum")]
+// #[cfg(feature = "node-sum")]
 pub use node::{Sum, Sum2};
 
-#[cfg(feature = "node-pass")]
+// #[cfg(feature = "node-pass")]
 pub use node::{Pass};
 
 // #[cfg(feature = "node-pass")]
@@ -92,5 +95,15 @@ pub enum GlicolPara {
     Bar(f32),
     Second(f32),
     Millisecond(f32),
-
 }
+
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+
+//     #[test]
+//     fn it_works() {
+//         let result = add(2, 2);
+//         assert_eq!(result, 4);
+//     }
+// }

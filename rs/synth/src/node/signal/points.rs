@@ -103,7 +103,7 @@ impl Points {
 
 impl<const N:usize> Node<N> for Points {
     fn process(&mut self, _inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
-        // println!("span {}", self.span);
+        println!("self.point_list {}", self.point_list.len());
         let list_len = self.point_list.len();
         if list_len == 0 {
             return ()
@@ -116,7 +116,6 @@ impl<const N:usize> Node<N> for Points {
                 let pos = self.step;
                 let samples = &self.point_list;
     
-                // WRITTEN BY ChatGPT, instructed and modified by chaosprint
                 let len = samples.len();
                 let mut index = 0;
                 while index < len - 1 && pos > samples[index + 1].0 {
@@ -144,8 +143,7 @@ impl<const N:usize> Node<N> for Points {
                 let pos = self.step % bar_dur as usize;
                 let period = bar_dur as usize;
                 let samples = &self.point_list;
-    
-                // WRITTEN BY ChatGPT, instructed and modified by chaosprint
+
                 let len = samples.len();
                 let mut index = 0;
                 while index < len - 1 && pos > samples[index + 1].0 {

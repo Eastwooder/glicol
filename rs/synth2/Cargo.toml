@@ -1,0 +1,27 @@
+[package]
+name = "glicol_synth2"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[features]
+default = ["node-boxed", "node-pass", "node-sum"]
+# use-samples = ["node-sampling"]
+# use-meta = ["node-dynamic"]
+node-boxed = []
+node-pass = []
+# node-sampling = []
+# node-dynamic = ["rhai"]
+node-sum = ["dasp_slice"]
+
+
+[dependencies]
+
+hashbrown = "0.13.2"
+arrayvec = "0.7.2"
+petgraph = "0.6.3"
+dasp_slice = { version = "0.11.0", default-features = false, features = ["std"], optional = true }
+dasp_ring_buffer = "0.11.0"
+dasp_signal = "0.11.0"
+dasp_interpolate = { version = "0.11.0", features = ["linear", "sinc"] }
