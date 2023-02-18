@@ -25,3 +25,6 @@ dasp_slice = { version = "0.11.0", default-features = false, features = ["std"],
 dasp_ring_buffer = "0.11.0"
 dasp_signal = "0.11.0"
 dasp_interpolate = { version = "0.11.0", features = ["linear", "sinc"] }
+
+[dev-dependencies]
+gnuplot = "0.0.37"

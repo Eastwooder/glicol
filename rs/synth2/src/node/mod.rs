@@ -2,6 +2,8 @@ use crate::buffer::Buffer;
 use hashbrown::HashMap;
 
 mod constsig; pub use constsig::*;
+mod mul; pub use mul::*;
+mod saw_osc; pub use saw_osc::*;
 
 // #[cfg(feature = "node-boxed")]
 mod boxed; pub use boxed::*;

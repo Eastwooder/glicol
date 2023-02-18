@@ -28,24 +28,10 @@ impl<const N:usize> Node<N> for Mul {
         match inputs.len() { // to determine if there is a sidechain
             1 => {
                 let main_input = inputs.values_mut().next().unwrap();
-                match main_input.buffers().len() {
-                    1 => {
-                        for i in 0..N {
-                            output[0][i] = main_input.buffers()[0][i] * self.val;
-                            if output.len() > 1 {
-                                output[1][i] = main_input.buffers()[0][i] * self.val;
-                            }
-                        }
-                    },
-                    2 => {
-                        
-                        if output.len() < 2 {return ()};
-                        for i in 0..N {
-                            output[0][i] = main_input.buffers()[0][i] * self.val;
-                            output[1][i] = main_input.buffers()[1][i] * self.val;
-                        }
-                    },
-                    _ => {}
+                for i in 0..output.len() {
+                    for j in 0..N {
+                        output[i][j] = main_input.buffers()[i][j] * self.val;
+                    }
                 }
             },
             2 => {
@@ -53,23 +39,10 @@ impl<const N:usize> Node<N> for Mul {
                 let main_input = &inputs[&self.input_order[0]]; // can panic if there is no id
                 // println!("sidechain input node id for mul {}", ref_input.node_id);
                 // println!("main input node id for mul {}", main_input.node_id);
-                match main_input.buffers().len() {
-                    1 => {
-                        for i in 0..N {
-                            output[0][i] = main_input.buffers()[0][i] * ref_input.buffers()[0][i];
-                            if output.len() > 1 {
-                                output[1][i] = main_input.buffers()[0][i] * ref_input.buffers()[0][i];
-                            }
-                        }
-                    },
-                    2 => {
-                        if output.len() < 2 {return ()};
-                        for i in 0..N {
-                            output[0][i] = main_input.buffers()[0][i] * ref_input.buffers()[0][i];
-                            output[1][i] = main_input.buffers()[1][i] * ref_input.buffers()[0][i];
-                        }
-                    },
-                    _ => {}
+                for i in 0..output.len() {
+                    for j in 0..N {
+                        output[i][j] = main_input.buffers()[i][j] * ref_input.buffers()[i][j];
+                    }
                 }
             },
             _ => {}
