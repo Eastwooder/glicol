@@ -6,7 +6,7 @@ use glicol_synth::{
     delay::{DelayN, DelayMs},
     sequencer::{Sequencer, Choose, Speed, Arrange},
     envelope::{EnvPerc, Adsr},
-    effect::{Plate, Balance, Reverb},
+    effect::{Plate, Balance},
     compound::{Bd, Hh, Sn, SawSynth, SquSynth, TriSynth},
     synth::{PatternSynth, MsgSynth},
     Pass,
@@ -223,11 +223,11 @@ pub fn makenode<const N: usize>(
             };
             (data, reflist)
         },
-        "reverb" => {
-            let data = Reverb::new().sr(sr).to_boxed_nodedata(2);
-            let reflist = vec![];
-            (data, reflist)
-        },
+        // "reverb" => {
+        //     let data = Reverb::new().sr(sr).to_boxed_nodedata(2);
+        //     let reflist = vec![];
+        //     (data, reflist)
+        // },
         "envperc" => {
             let data = EnvPerc::new().sr(sr).attack(
                 match &paras[0] {
