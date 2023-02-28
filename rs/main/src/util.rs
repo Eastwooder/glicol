@@ -17,7 +17,7 @@ use glicol_synth::{
 use glicol_synth::dynamic::Meta;
 
 #[cfg(feature = "use-samples")]
-use glicol_synth::sampling::{Sampler, PSampler};
+use glicol_synth::sampling::{SoundPlayer, Sampler, PSampler};
 
 use hashbrown::HashMap;
 use glicol_synth::{NodeData, BoxedNodeSend, GlicolPara}; //, Processor, Buffer, Input, Node
@@ -124,7 +124,24 @@ pub fn makenode<const N: usize>(
                     if !samples_dict.contains_key(s) {
                         return Err(EngineError::NonExsitSample(s.to_owned()))
                     }
-                    (Sampler::new(samples_dict[s], sr).to_boxed_nodedata(2), vec![])
+                    (SoundPlayer::new(samples_dict[s], sr).to_boxed_nodedata(2), vec![])
+                }
+                _ => unimplemented!()
+            }
+        },
+
+        #[cfg(feature="use-samples")]
+        "sampler" => {
+            let trigger = match &paras[1] {
+                GlicolPara::Number(v) => *v,
+                _ => unimplemented!()
+            };
+            match &paras[0] {
+                GlicolPara::SampleSymbol(s) => {
+                    if !samples_dict.contains_key(s) {
+                        return Err(EngineError::NonExsitSample(s.to_owned()))
+                    }
+                    (Sampler::new(samples_dict[s], sr, trigger).to_boxed_nodedata(2), vec![])
                 }
                 _ => unimplemented!()
             }
@@ -550,7 +567,7 @@ pub fn makenode<const N: usize>(
         //     };
         //     ( Pass{}.to_boxed_nodedata(2), reflist)
         // },
-        _ => unimplemented!()
+        _ => unimplemented!("{}", name)
     };
     return Ok((nodedata, reflist))
 }

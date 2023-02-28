@@ -59,11 +59,12 @@ impl< const N: usize> Node<N> for Sequencer {
                                 _ => {0.0}
                             };
         
-                            if midi == 0.0 {
-                                output[0][i] = 0.0
-                            } else {
-                                output[0][i] = 2.0f32.powf((midi - 60.0)/12.0)
-                            }
+                            output[0][i] = midi as f32;
+                            // if midi == 0.0 {
+                            //     output[0][i] = 0.0
+                            // } else {
+                            //     output[0][i] = 2.0f32.powf((midi - 60.0)/12.0)
+                            // }
                         }
                     }
                     self.step += 1;
@@ -89,11 +90,12 @@ impl< const N: usize> Node<N> for Sequencer {
                                 _ => {return ()}
                             };
         
-                            if midi == 0.0 {
-                                output[0][i] = 0.0
-                            } else {
-                                output[0][i] = 2.0f32.powf((midi - 60.0)/12.0)
-                            }
+                            output[0][i] = midi as f32;
+                            // if midi == 0.0 {
+                            //     output[0][i] = 0.0
+                            // } else {
+                            //     output[0][i] = 2.0f32.powf((midi - 60.0)/12.0)
+                            // }
                         }
                     }
                     self.step += 1;

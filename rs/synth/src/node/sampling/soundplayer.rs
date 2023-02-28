@@ -2,21 +2,18 @@ use crate::{Buffer, Input, Node, BoxedNodeSend, NodeData, Message, impl_to_boxed
 use hashbrown::HashMap;
 
 #[derive(Debug, Clone)]
-pub struct Sampler {
+pub struct SoundPlayer {
     playback: Vec<(usize, f32)>,
     pub sample: (&'static[f32], usize, usize),
     len: usize,
     endindex: usize,
     clock: usize,
     sr: usize,
-    trigger: f32,
-    // start: f32,
-    // end: f32,
     input_order: Vec<usize>
 }
 
-impl Sampler {
-    pub fn new(sample: (&'static[f32], usize, usize), sr: usize, trigger: f32) -> Self {
+impl SoundPlayer {
+    pub fn new(sample: (&'static[f32], usize, usize), sr: usize) -> Self {
         Self {
             playback: vec![],
             sample,
@@ -24,16 +21,13 @@ impl Sampler {
             endindex:  sample.0.len()-1,
             clock: 0,
             sr,
-            trigger,
-            // start,, start: f32, end: f32
-            // end,
-            input_order: vec![],
+            input_order: vec![]
         }
     }
     impl_to_boxed_nodedata!();
 }
 
-impl<const N: usize> Node<N> for Sampler {
+impl<const N: usize> Node<N> for SoundPlayer {
     fn process(&mut self, inputs: &mut HashMap<usize, Input<N>>, output: &mut [Buffer<N>]) {
         output[0].silence();
         output[1].silence();
@@ -42,10 +36,13 @@ impl<const N: usize> Node<N> for Sampler {
                 let main_input = inputs.values_mut().next().unwrap();
                 let input_buf = &mut main_input.buffers();
                 for i in 0..N {
-                    if input_buf[0][i] == self.trigger { // == self.trigger {
-                        let dur = self.len as f32 /* self.ts */ / ( self.sample.2 as f32 / self.sr as f32 );
-                        let start_n = self.clock;
-                        self.playback.push((start_n, dur));
+                    if input_buf[0][i] > 0.0 {
+                        
+                        let relative_pitch = 2.0f32.powf((input_buf[0][i] - 60.0)/12.0);
+                        // }
+
+                        let dur = self.len as f32 / relative_pitch / ( self.sample.2 as f32 / self.sr as f32 );
+                        self.playback.push((self.clock, dur));
                     }
                     let mut count = 0;
                     let mut to_remove = vec![];

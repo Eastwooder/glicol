@@ -9,11 +9,10 @@ receiver = { reference }
 // meta node
 
 // sampler
-sampler = { "sampler" ~ sample_name ~ sampler_config? }
+sampler = { "sampler" ~ sample_name ~ (trigger_num | sampler_config?) }
 sample_name = {symbol}
 sampler_config = {"{" ~ trigger_num? ~ start? ~ end? ~ attack? ~ decay? ~ ps? ~ ts? ~ "}"}
-
-trigger_num = {","? ~ "trigger_num"~":"~number ~ ","?}
+trigger_num = {","? ~ "trigger_num"? ~ ":"?~number ~ ","?}
 start = {","? ~ "start"~":"~number ~ ","?}
 end = {","? ~ "end"~":"~number ~ ","?}
 attack = {","? ~ "attack"~":"~number ~ ","?}
@@ -32,7 +31,7 @@ reverb_config = {"{" ~ ("mix"~":"~number) ~ (","~"bw"~":"~number)?  ~ (","~"damp
 seq = { "seq" ~ notes+ ~ seq_config? }
 seq_config = {"{" ~ seq_span ~ "}"}
 seq_span = { "span" ~ ":" ~ number }
-notes = { (midi|rest|note_ref)+ }
+notes = ${ (midi|rest|note_ref)+ }
 midi = {ASCII_DIGIT+}
 rest = {"_"} // this looks funny
 note_ref = { "~" ~ ASCII_ALPHA_LOWER }
