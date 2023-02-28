@@ -6,7 +6,7 @@ use glicol_synth::{
     delay::{DelayN, DelayMs},
     sequencer::{Sequencer, Choose, Speed, Arrange},
     envelope::{EnvPerc, Adsr},
-    effect::{Plate, Balance},
+    effect::{Plate, Balance, PhaseVocoder},
     compound::{Bd, Hh, Sn, SawSynth, SquSynth, TriSynth},
     synth::{PatternSynth, MsgSynth},
     Pass,
@@ -218,6 +218,19 @@ pub fn makenode<const N: usize>(
                 _ => {}
             };
             (data, reflist)
+        },
+        "vocoder" => {
+            let ps = match &paras[0] {
+                GlicolPara::Number(v) => *v,
+                // GlicolPara::Reference(_) => 100.0,
+                _ => unimplemented!()
+            };
+            let ts = match &paras[1] {
+                GlicolPara::Number(v) => *v,
+                // GlicolPara::Reference(_) => 100.0,
+                _ => unimplemented!()
+            };
+            (PhaseVocoder::new(ps, ts).to_boxed_nodedata(2), vec![])
         },
         "apfmsgain" => {
             let data = AllPassFilterGain::new().sr(sr).delay(

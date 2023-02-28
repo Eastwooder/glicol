@@ -37,6 +37,7 @@ hashbrown = { version = "0.13.2" }
 arrayvec = {version = "0.7.2" }
 rhai = { version = "1.12.0",  default-features = false, features = ["sync", "f32_float", "only_i32"], optional = true  }
 # freeverb = { git = "https://github.com/irh/freeverb-rs"}
+rustfft = "6.1.0"
 
 [dev-dependencies]
 gnuplot = "0.0.37"

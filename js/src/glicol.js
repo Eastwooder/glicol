@@ -359,7 +359,7 @@ window.loadModule = async () => {
   })
 }
 window.loadModule();
-window.code = `o: seq 60 >> sp \\cb`
+window.code = `o: seq 60 >> sampler \\cb 60`
 window.isGlicolRunning = false
 window.encoder = new TextEncoder('utf-8');
 

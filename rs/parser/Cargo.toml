@@ -23,4 +23,6 @@ pest_derive = "2.1.0"
 glicol_macros = { path="../macros", version = "0.12.8"}
 glicol_synth = { path="../synth", version = "0.12.8"}
 hashbrown = { version = "0.13.2", default-features = false}
+evalexpr = "8.1.0"
+fasteval = "0.2.4"
 # arrayvec = {version = "0.7.2", default-features = false }

@@ -4,6 +4,7 @@ pub use pest_derive::*;
 pub use pest::iterators::Pair;
 // use pest::error::ErrorVariant;
 use hashbrown::HashMap;
+use evalexpr::*;
 
 // use glicol_macros::{one_para_number_or_ref, two_numbers};
 pub use glicol_synth::GlicolPara;
@@ -49,11 +50,32 @@ pub fn get_ast(code: &str) -> Result<GlicolAst, Error<Rule>> {
                                         chain_node_names.push("sin");
                                         chain_paras.push(vec![GlicolPara::Number(paras.as_str().parse::<f32>().unwrap())]);
                                     },
+
+                                    Rule::mul => {
+                                        println!("node {:?}", node.as_str());
+                                        let paras = node.into_inner().next().unwrap();
+                                        println!("paras {:?}", paras.as_str());
+                                        chain_node_names.push("mul");
+                                        chain_paras.push(vec![GlicolPara::Number(paras.as_str().parse::<f32>().unwrap())]);
+                                    },
+
+                                    Rule::vocoder => {
+                                        println!("node {:?}", node.as_str());
+                                        let mut params = node.into_inner();
+                                        let para_a = params.next().unwrap();
+                                        let para_b = params.next().unwrap();
+                                        
+                                        chain_node_names.push("vocoder");
+                                        chain_paras.push(vec![
+                                            GlicolPara::Number(para_a.as_str().parse::<f32>().unwrap()),
+                                            GlicolPara::Number(para_b.as_str().parse::<f32>().unwrap()),
+                                        ]);
+                                    },
                                     Rule::sampler => {
                                         // paras of samplers
                                         let mut params = node.into_inner();
                                         let name = params.next().unwrap();
-                                        let trigger = params.next().unwrap();
+                                        let trigger = eval(params.next().unwrap().as_str()).unwrap().as_number().unwrap() as f32;
                                         // let start = params.next().unwrap();
                                         // let end = params.next().unwrap();
                                         // let attack = params.next().unwrap();
@@ -61,10 +83,11 @@ pub fn get_ast(code: &str) -> Result<GlicolAst, Error<Rule>> {
                                         // let ps = params.next().unwrap();
                                         // let ts = params.next().unwrap();
 
+                                        // println!("trigger {:?}", trigger.as_str());
                                         chain_node_names.push("sampler");
                                         chain_paras.push(vec![
                                             GlicolPara::SampleSymbol(name.as_str().to_owned()),
-                                            GlicolPara::Number(trigger.as_str().parse::<f32>().unwrap()),
+                                            GlicolPara::Number(trigger),
                                             // GlicolPara::Number(start.as_str().parse::<f32>().unwrap()),
                                             // GlicolPara::Number(end.as_str().parse::<f32>().unwrap()),
                                             // GlicolPara::Number(attack.as_str().parse::<f32>().unwrap())
