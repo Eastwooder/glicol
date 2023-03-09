@@ -9,6 +9,14 @@ edition = "2018"
 [lib]
 crate-type = ["cdylib"]
 
+# [target.'cfg(target_arch = "wasm32")']
+# rustflags = [
+#     "-C", "link-arg=-s",
+#     "-C", "link-arg=--no-entry",
+#     "-C", "link-arg=--export-all",
+#     "-C", "link-arg=../../../sonic_rs/sonic.a",
+# ]
+
 [dependencies]
 lazy_static = "1.2.0"
 glicol = { path = "../main", features = ["use-samples", "use-meta"] }
@@ -18,3 +26,6 @@ opt-level = 'z'     # Optimize for size.
 lto = true          # Enable Link Time Optimization
 codegen-units = 1   # Reduce number of codegen units to increase optimizations.
 panic = 'abort'     # Abort on panic
+
+[build]
+target = "wasm32-unknown-unknown"

@@ -59,6 +59,19 @@ pub fn get_ast(code: &str) -> Result<GlicolAst, Error<Rule>> {
                                         chain_paras.push(vec![GlicolPara::Number(paras.as_str().parse::<f32>().unwrap())]);
                                     },
 
+                                    Rule::sonic => {
+                                        println!("node {:?}", node.as_str());
+                                        let mut params = node.into_inner();
+                                        let para_a = params.next().unwrap();
+                                        let para_b = params.next().unwrap();
+                                        
+                                        chain_node_names.push("sonic");
+                                        chain_paras.push(vec![
+                                            GlicolPara::Number(para_a.as_str().parse::<f32>().unwrap()),
+                                            GlicolPara::Number(para_b.as_str().parse::<f32>().unwrap()),
+                                        ]);
+                                    },
+
                                     Rule::vocoder => {
                                         println!("node {:?}", node.as_str());
                                         let mut params = node.into_inner();

@@ -2,7 +2,7 @@ block = {SOI~ sentence+ ~EOI}
 sentence = {(track_name|reference) ~ ":" ~ chain}
 track_name = {valid_ident}
 chain = {node ~ ( ">>" ~ node)*}
-node = { sin | mul | seq | lpf | reverb | sampler | receiver | vocoder}
+node = { sin | mul | seq | lpf | reverb | sampler | receiver | vocoder | sonic}
 
 receiver = { reference }
 
@@ -49,6 +49,11 @@ vocoder = {("pv" | "vocoder") ~ pitch_shift ~ time_stretch}
 pitch_shift = { number }
 time_stretch = { number }
 
+// effects
+sonic = {"sonic" ~ speed ~ pitch}
+speed = { number }
+pitch = { number }
+
 // filters
 lpf = {("lpf" | "rlpf") ~ cutoff ~ q}
 hpf = {("hpf" | "rhpf") ~ cutoff ~ q}
@@ -65,7 +70,7 @@ reference = @{"~" ~ valid_ident }
 symbol = @{"\\" ~ valid_ident }
 valid_ident = @{ ASCII_ALPHA_LOWER ~ (ASCII_ALPHA_LOWER|"_"|ASCII_DIGIT)* }
 
-keywords = {"sin"|"mul"|"lpf"|"seq"|"sp"|"sampler"|"reverb"|"vocoder"|"pv"}
+keywords = {"sin"|"mul"|"lpf"|"seq"|"sp"|"sampler"|"reverb"|"vocoder"|"pv"|"sonic"}
 
 COMMENT = _{ ("/-" ~ (!"-/" ~ ANY)* ~ "-/" ) | ("//" ~ (!"\n" ~ ANY)* ) }
 WHITESPACE = _{" " | "\t" | "\n"}
